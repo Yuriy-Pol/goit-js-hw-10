@@ -11,9 +11,9 @@ const options = {
     const userSelectedDate = selectedDates[0];
 
     if (userSelectedDate < new Date()) {
-      iziToast.show({
+      iziToast.error({
         title: 'Error',
-        message: 'Please choose a date in the future',
+        message: 'Please choose a date and time in the future',
       });
       document.querySelector('[data-start]').disabled = true;
     } else {
@@ -22,34 +22,21 @@ const options = {
   },
 };
 
-flatpickr('#datetime-picker', options);
-//   onClose(selectedDates) {
-//     const userSelectedDate = selectedDates[0];
-
-//     if (userSelectedDate < new Date()) {
-//       alert('Please choose a date in the future');
-//       document.querySelector('[data-start]').disabled = true;
-//     } else {
-//       document.querySelector('[data-start]').disabled = false;
-//     }
-//   },
-// };
-
-// flatpickr('#datetime-picker', options);
-
+const datePicker = flatpickr('#datetime-picker', options);
 let countdownInterval;
 
 function startCountdown(targetDate) {
+  document.querySelector('#datetime-picker').disabled = true;
   countdownInterval = setInterval(() => {
     const currentDate = new Date();
-    const timeDifference = targetDate - currentDate;
 
-    if (timeDifference <= 0) {
+    if (currentDate >= targetDate) {
       clearInterval(countdownInterval);
       updateTimerDisplay({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       document.querySelector('[data-start]').disabled = true;
+      document.querySelector('#datetime-picker').disabled = false;
     } else {
-      const timeRemaining = convertMs(timeDifference);
+      const timeRemaining = convertMs(targetDate - currentDate);
       updateTimerDisplay(timeRemaining);
     }
   }, 1000);
@@ -83,6 +70,15 @@ function convertMs(ms) {
 }
 
 document.querySelector('[data-start]').addEventListener('click', () => {
-  const selectedDate = flatpickr('#datetime-picker').selectedDates[0];
+  const selectedDate = datePicker.selectedDates[0];
+
+  if (!selectedDate) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Please choose a valid date and time',
+    });
+    return;
+  }
+
   startCountdown(selectedDate);
 });

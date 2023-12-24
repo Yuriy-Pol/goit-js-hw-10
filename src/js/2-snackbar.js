@@ -3,7 +3,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 document.querySelector('.form').addEventListener('submit', function (event) {
   event.preventDefault();
-
+  const delayInput = this.elements.delay;
   const delay = parseInt(this.elements.delay.value, 10);
   const state = this.elements.state.value;
 
@@ -27,6 +27,7 @@ document.querySelector('.form').addEventListener('submit', function (event) {
       displayNotification(`❌ Rejected promise in ${delay}ms`, 'rejected');
     }
   );
+  delayInput.value = '';
 });
 
 function displayNotification(message, state) {
@@ -35,7 +36,6 @@ function displayNotification(message, state) {
   notification.className = state;
   notification.style.display = 'block';
 
-  // Clear notification after 3 seconds
   setTimeout(() => {
     notification.style.display = 'none';
   }, 3000);
